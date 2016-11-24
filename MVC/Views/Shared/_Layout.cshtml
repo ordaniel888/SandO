@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/Content/site.css"/>
+    <link rel="icon" href="~/Content/images/Childish-Tag.ico"/>
+
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+</head>
+<body>
+
+    @Html.Hidden("countOfItem", 0)
+    <header>
+        <div class="content-wrapper">
+            <p class="site-title">
+                <a href="/Home/Index"><img src="/Content/images/logo.png" style="height:100px; width:100px; margin-left: 25px" /> </a>
+            </p>
+            <section id="login">
+                @Html.Partial("_LoginPartial")
+            </section>
+        </div>
+    </header>
+    <nav>
+        @{ var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];
+            var shoppingList = (List<int>)HttpContext.Current.Session["shoppingList"]; }
+
+        <ul id="menu">
+            <li> @Html.ActionLink("קטלוג", "index", "catalog") </li>
+            <li>
+                @Html.ActionLink("סל קניות שלי", "index", "ShoppingBag")
+                <label id="countOfProducts" style="display:inline"> (@shoppingList.Count)</label>
+            </li>
+            <li> @Html.ActionLink("סניפים", "index", "branch") </li>
+
+            @if (sessionUser != null && sessionUser.FirstName == "admin")
+            {
+                <li> @Html.ActionLink("לקוחות", "index", "Customer") </li>
+            }
+
+            <li> @Html.ActionLink("אודות", "About", "Home") </li>
+        </ul>
+    </nav>
+
+    <section id="site-body">
+        <div class="content-wrapper main-content clear-fix">
+            @RenderBody()
+        </div>
+    </section>
+    <footer>
+        <div id="allRights">© כל הזכויות שמורות, אור דניאל וסטפני ג'ין</div>
+
+    </footer>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+
+</html>

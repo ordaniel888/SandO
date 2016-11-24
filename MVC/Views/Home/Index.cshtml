@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "S&O";
+}
+
+@section scripts{
+    <script src="~/scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            window.requestNextAnimationFrame = (function () {
+                var originalWebkitRequestAnimationFrame = undefined,
+                    wrapper = undefined,
+                    callback = undefined,
+                    geckoVersion = 0,
+                    userAgent = navigator.userAgent,
+                    index = 0,
+                    self = this;
+
+                // Workaround for Chrome 10 bug where Chrome
+                // does not pass the time to the animation function
+
+                if (window.webkitRequestAnimationFrame) {
+                    // Define the wrapper
+
+                    wrapper = function (time) {
+                        if (time === undefined) {
+                            time = +new Date();
+                        }
+                        self.callback(time);
+                    };
+
+                    // Make the switch
+
+                    originalWebkitRequestAnimationFrame = window.webkitRequestAnimationFrame;
+
+                    window.webkitRequestAnimationFrame = function (callback, element) {
+                        self.callback = callback;
+
+                        // Browser calls the wrapper and wrapper calls the callback
+
+                        originalWebkitRequestAnimationFrame(wrapper, element);
+                    }
+                }
+
+                // Workaround for Gecko 2.0, which has a bug in
+                // mozRequestAnimationFrame() that restricts animations
+                // to 30-40 fps.
+
+                if (window.mozRequestAnimationFrame) {
+                    // Check the Gecko version. Gecko is used by browsers
+                    // other than Firefox. Gecko 2.0 corresponds to
+                    // Firefox 4.0.
+
+                    index = userAgent.indexOf('rv:');
+
+                    if (userAgent.indexOf('Gecko') != -1) {
+                        geckoVersion = userAgent.substr(index + 3, 3);
+
+                        if (geckoVersion === '2.0') {
+                            // Forces the return statement to fall through
+                            // to the setTimeout() function.
+
+                            window.mozRequestAnimationFrame = undefined;
+                        }
+                    }
+                }
+
+                return window.requestAnimationFrame ||
+                   window.webkitRequestAnimationFrame ||
+                   window.mozRequestAnimationFrame ||
+                   window.oRequestAnimationFrame ||
+                   window.msRequestAnimationFrame ||
+
+                   function (callback, element) {
+                       var start,
+                           finish;
+
+                       window.setTimeout(function () {
+                           start = +new Date();
+                           callback(start);
+                           finish = +new Date();
+
+                           self.timeout = 1000 / 60 - (finish - start);
+
+                       }, self.timeout);
+                   };
+            }
+            )
+            ();
+
+            var canvas = document.getElementById('welcome-canvas'),
+                context = canvas.getContext('2d'),
+                lastTime = 0,
+                fps = 0,
+                picOffset = 0,
+                PIC_VELOCITY = 50, // 30 pixels/second
+                image = new Image();
+
+            // Functions
+
+            function erase() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function draw() {
+                context.save();
+
+                picOffset = picOffset < canvas.width ?
+                            picOffset + PIC_VELOCITY / fps : 0;
+
+                context.save();
+                context.translate(-picOffset, 0);
+
+                context.drawImage(image, 0, 0);
+                context.drawImage(image, image.width - 2, 0);
+
+                context.restore();
+            }
+
+            function calculateFps(now) {
+                var fps = 1000 / (now - lastTime);
+                lastTime = now;
+                return fps;
+            }
+
+            function animate(now) {
+                if (now === undefined) {
+                    now = +new Date;
+                }
+
+                fps = calculateFps(now);
+                erase();
+                draw();
+                requestNextAnimationFrame(animate);
+            }
+
+            // Initialization
+            canvas.width = canvas.width;
+            canvas.height = canvas.height;
+
+            image.src = '../../Content/images/shopping-bags.jpg';
+            image.onload = function (e) {
+                draw();
+            };
+
+            requestNextAnimationFrame(animate);
+
+        });
+    </script>
+}
+
+<div id="mainContent">
+    <a id="welcomeLink" href="/Catalog/Index">
+        <canvas id='welcome-canvas' width='1100' height='530'>
+            Canvas not supported
+        </canvas>
+    </a>
+</div>

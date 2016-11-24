@@ -1,0 +1,18 @@
+﻿@{
+    var sessionVar = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];
+}
+@if (sessionVar != null)
+{
+    <text>
+        @Html.ActionLink("החשבון שלי", "Details", "Customer", new { id = sessionVar.CustomerID }, htmlAttributes: new { id = "detLink" })
+        @Html.ActionLink("התנתק", "Logout", "Customer", routeValues: null, htmlAttributes: new { id = "logoutLink" })
+        שלום, @sessionVar.FirstName
+    </text>
+}
+else
+{
+    <ul>     
+        <li>@Html.ActionLink("הרשמה", "Create", "Customer", routeValues: null, htmlAttributes: new { id = "regLink" })</li>
+        <li>@Html.ActionLink("התחברות", "Login", "Customer", routeValues: null, htmlAttributes: new { id = "logLink" })</li>
+    </ul>
+}
