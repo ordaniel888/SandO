@@ -18,7 +18,7 @@ namespace MVC.Migrations
         {
             var branches = new List<Branch>
             {
-                new Branch {  BranchID = 3,  Name = " ",   City = "תל אביב",
+                new Branch {  BranchID = 3,  Name = "רוטשילד",   City = "תל אביב",
                     Street = "רוטשילד", HouseNo = 15, CoorX = 32.063179, CoorY =  34.770962},
                 new Branch { Name = "קניון חולון",   City = "חולון",
                     Street = "גולדה מאיר", HouseNo = 7, CoorX = 32.012288, CoorY =  34.77943 },

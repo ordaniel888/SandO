@@ -3,6 +3,7 @@ namespace MVC.DAL
     using Models;
     using System;
     using System.Data.Entity;
+    using System.Data.Entity.ModelConfiguration.Conventions;
     using System.Linq;
 
     public class ShopContext : DbContext
@@ -16,6 +17,11 @@ namespace MVC.DAL
         public ShopContext()
             : base("name=ShopContext")
         {
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 

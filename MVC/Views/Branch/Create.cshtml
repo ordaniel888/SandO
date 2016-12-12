@@ -1,0 +1,82 @@
+﻿@model MVC.Models.Branch
+
+@{
+    ViewBag.Title = "S&O - הוספת סניף";
+}
+
+<h2>הוספה</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset class="multiset">
+        <legend>Branch</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.City)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.City)
+            @Html.ValidationMessageFor(model => model.City)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Street)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Street)
+            @Html.ValidationMessageFor(model => model.Street)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.HouseNo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.HouseNo)
+            @Html.ValidationMessageFor(model => model.HouseNo)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PhoneNo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PhoneNo)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CoorX)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CoorX, new { data_val_number = "השדה חייב להכיל ערך מספרי" })
+            @Html.ValidationMessageFor(model => model.CoorX)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CoorY)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CoorY, new { data_val_number = "השדה חייב להכיל ערך מספרי" })
+            @Html.ValidationMessageFor(model => model.CoorY)
+        </div>
+
+        צריך עזרה במציאת הקורדינטות?  <a href="http://www.latlong.net/convert-address-to-lat-long.html" target="_blank">לחץ כאן</a>
+
+        <p>
+            <input type="submit" value="שמור" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("בחזרה לסניפים", "Index")
+</div>
+
+@section Scripts {
+    <script src="~/scripts/jquery.validate.js"></script>
+}

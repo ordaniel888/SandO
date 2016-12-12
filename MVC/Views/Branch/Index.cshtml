@@ -1,0 +1,153 @@
+﻿@model IEnumerable<MVC.Models.Branch>
+
+@{
+    ViewBag.Title = "S&O - רשימת סניפים";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var map = null;
+            getMap();
+            UpdatePushpin();
+
+            $('[id^=delete_]').click(function () {
+
+                var branch = $(this).parent().parent();
+                var id = $(this).attr("id").split("_")[1];
+
+                if (confirm("האם אתה בטוח שברצונך למחוק?") == true) {
+
+                    $.ajax({
+                        url: '/Branch/Delete',
+                        type: 'Post',
+                        dataType: 'Json',
+                        data: { id: id },
+                        success: (function (result) {
+                            $(branch).hide(500);
+                            $(branch).remove();
+                            $("#map-canvas").children().remove();
+                            getMap();
+                            UpdatePushpin();
+                        }),
+                        error: (function (xhr, status) {
+                            alert(status);
+                        })
+                    });
+                }
+            });
+        });
+
+        function getMap() {
+
+            var MapSize = {
+                normalSize: {
+                    height: 500,
+                    width: 500
+                },
+                fullScreen: {
+                    height: screen.height,
+                    width: screen.width
+                }
+            }
+
+            var mapOptions = {
+                credentials: "AtLpSxVL1pD68Ueg3TUHYd4lzBkxqsTKJv9r_H0SNFHSDp-cq25L3DOrPsNL4pHJ",
+                mapTypeId: Microsoft.Maps.MapTypeId.road,
+                center: new Microsoft.Maps.Location(31.814194, 34.753372),
+                zoom: 8,
+                labelOverlay: Microsoft.Maps.LabelOverlay.hidden,
+                height: MapSize.normalSize.height,
+                width: MapSize.normalSize.width
+            }
+            map = new Microsoft.Maps.Map(document.getElementById("map-canvas"), mapOptions);
+        }
+
+        function UpdatePushpin() {
+            $('[id^=branch#]').each(function () {
+                var x = $(this).find("#coorX").val();
+                var y = $(this).find("#coorY").val();
+
+                var point1 = new Microsoft.Maps.Location(x, y);
+                var pin1 = new Microsoft.Maps.Pushpin(point1, { width: 50, height: 50, draggable: false });
+                map.entities.push(pin1);
+            });
+        }
+
+        $(".searchImg").click(function () {
+            if ($(".searchBar").hasClass("closed")) {
+                $(".searchBar").show();
+                $(".searchBar").removeClass("closed");
+                $(".searchBar").addClass("open");
+            }
+            else {
+                $(".searchBar").hide();
+                $(".searchBar").removeClass("open");
+                $(".searchBar").addClass("closed");
+            }
+        });
+    </script>
+}
+
+<h2>רשימת סניפים</h2>
+
+@{var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];}
+@if (sessionUser != null && sessionUser.FirstName == "admin")
+{
+    <p>
+        @Html.ActionLink("הוסף סניף חדש", "Create")
+    </p>
+}
+
+@using (Html.BeginForm("Index", "Branch", FormMethod.Post))
+{
+    <div class="searchImg">
+        <label>לחיפוש . . .</label>
+    </div>
+    <div class="searchBar closed" style="display:none">
+        <div style="display: flex">
+            <div style="margin-left: 30px;">
+                <label>הזן שם סניף :</label>
+                <input name="txt" value="" style="width: 150px;" />
+            </div>
+            <div>
+                <label>או</label>
+                @Html.DropDownList("BranchID", null, "בחר סניף", new { style = "width:200px; margin-left:30px;" })
+            </div>
+            <div>
+                <label>חיפוש לפי עיר:</label>
+                @Html.DropDownList("City", null, "בחר עיר", new { style = "width:200px; margin-left:30px;" })
+            </div>
+            <input type="submit" value="סנן" style="margin-top: 30px;" />
+        </div>
+    </div>
+}
+
+
+<div class="fullTable">
+    @foreach (var item in Model)
+    {
+        <div id="branch#@item.BranchID" class="branchDetails">
+            <label class="brname">@item.Name</label>
+            <label>@item.Street @item.HouseNo , @item.City</label>
+            <label>@item.PhoneNo</label>
+
+            @Html.Hidden("coorX", item.CoorX)
+            @Html.Hidden("coorY", item.CoorY)
+            @if (sessionUser != null && sessionUser.FirstName == "admin")
+            {
+                <div style="display:table-cell">
+                    @Html.ActionLink("ערוך", "Edit", new { id = item.BranchID }) |
+                    <img src="~/Content/images/delete.png" id="delete_@item.BranchID" class="deleteBranch" title="מחיקת סניף" />
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div id="map-canvas">
+</div>
