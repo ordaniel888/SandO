@@ -36,7 +36,7 @@
             </li>
             <li> @Html.ActionLink("סניפים", "index", "branch") </li>
 
-            @if (sessionUser != null && sessionUser.FirstName == "admin")
+            @if (sessionUser != null && sessionUser.IsAdmin)
             {
                 <li> @Html.ActionLink("לקוחות", "index", "Customer") </li>
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -51,6 +52,9 @@ namespace MVC.Models
         [Display(Name = "מספר טלפון")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNo { get; set; }
+        
+        [DefaultValue(false)]
+        public bool IsAdmin { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
     }

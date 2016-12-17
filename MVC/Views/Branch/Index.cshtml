@@ -96,7 +96,7 @@
 <h2>רשימת סניפים</h2>
 
 @{var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];}
-@if (sessionUser != null && sessionUser.FirstName == "admin")
+@if (sessionUser != null && sessionUser.IsAdmin)
 {
     <p>
         @Html.ActionLink("הוסף סניף חדש", "Create")
@@ -138,7 +138,7 @@
 
             @Html.Hidden("coorX", item.CoorX)
             @Html.Hidden("coorY", item.CoorY)
-            @if (sessionUser != null && sessionUser.FirstName == "admin")
+            @if (sessionUser != null && sessionUser.IsAdmin)
             {
                 <div style="display:table-cell">
                     @Html.ActionLink("ערוך", "Edit", new { id = item.BranchID }) |

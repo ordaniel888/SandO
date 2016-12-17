@@ -1,0 +1,154 @@
+﻿@model IEnumerable<MVC.Models.Customer>
+
+@{
+    ViewBag.Title = "S&O - לקוחות";
+}
+@section scripts {
+    <script type="text/javascript">
+
+        $('[id^=delete_]').click(function () {
+
+            var customer = $(this).parent().parent();
+            var id = $(this).attr("id").split("_")[1];
+
+            if (confirm("האם אתה בטוח שברצונך למחוק?") == true) {
+
+                $.ajax({
+                    url: '/Customer/Delete',
+                    type: 'Post',
+                    dataType: 'Json',
+                    data: { id: id },
+                    success: (function (result) {
+                        $(customer).hide(500);
+                    }),
+                    error: (function (xhr, status) {
+                        alert(status);
+                    })
+                });
+            }
+        });
+
+        $(".searchImg").click(function () {
+            if ($(".searchBar").hasClass("closed"))
+            {
+                $(".searchBar").show();
+                $(".searchBar").removeClass("closed");
+                $(".searchBar").addClass("open");
+            }
+            else
+            {
+                $(".searchBar").hide();
+                $(".searchBar").removeClass("open");
+                $(".searchBar").addClass("closed");
+            }
+ 
+        });
+    </script>
+}
+
+<h2>רשימת לקוחות</h2>
+
+@using (Html.BeginForm("Index", "Customer", FormMethod.Post))
+{
+    <div class="searchImg">
+        <label>לחיפוש . . .</label>
+    </div>
+    <div class="searchBar closed" style="display:none">
+        <div style="display: flex">
+            <div style="margin-left: 30px; border-right: solid 1px; border-color: #AB9999; padding-right: 10px;">
+                <label>שם פרטי:</label>
+                <input name="fisrtname" value="" style="width: 150px;" />
+            </div>
+            <div style="margin-left: 30px;">
+                <label>שם משפחה:</label>
+                <input name="lastname" value="" style="width: 150px;" />
+            </div>
+            <div style="margin-left: 30px; border-right: solid 1px; border-color: #AB9999; padding-right: 10px;">
+                <label>מגיל: </label>
+                <input name="minAge" value="@ViewBag.minAge" style=" width: 50px;" />
+            </div>
+            <div style="margin-left: 30px;">
+                <label>עד גיל: </label>
+                <input name="maxAge" value="@ViewBag.maxAge" style="width: 50px;" />
+            </div>
+            <div style="margin-left: 30px; border-right: solid 1px; border-color: #AB9999; padding-right: 10px;">
+                <label>עיר: </label>
+                @Html.DropDownList("City", null, "בחר עיר", new { style = "width:200px; margin-left:30px;" })
+            </div>
+            <input type="submit" value="סנן" style="margin-top: 30px;" />
+        </div>
+    </div>
+}
+
+
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Password)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Age)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.City)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Street)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HouseNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Street)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HouseNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.ActionLink("עריכה", "Edit", new { id = item.CustomerID }) |
+                @Html.ActionLink("חשבון", "Details", new { id = item.CustomerID }) |
+                <img src="~/Content/images/delete.png" id="delete_@item.CustomerID" class="deleteCustomer" title="מחיקת לקוח" />
+            </td>
+        </tr>
+    }
+
+</table>

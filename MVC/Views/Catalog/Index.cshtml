@@ -1,0 +1,164 @@
+﻿@model IEnumerable<MVC.Models.Product>
+@using MVC.Models
+@{
+    ViewBag.Title = "S&O - קטלוג";
+}
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(".addToBag").click(function () {
+
+            var button = $(this);
+
+            $.ajax({
+                url: '/ShoppingBag/AddToBag',
+                type: 'Post',
+                dataType: 'Json',
+                data: { productId: $(this).parent().attr("id") },
+                success: (function (result) {
+
+                    $(button).text("נוסף לסל");
+                    $(button).removeClass("addToBag");
+                    $(button).addClass("inBag");
+                    $(button).attr("disabled", "disabled");
+
+                    $("#countOfProducts").text("(" + result + ")");
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                })
+            });
+        });
+
+        $('[id^=delete_]').click(function () {
+
+            var product = $(this).parent();
+            var id = $(this).attr("id").split("_")[1];
+
+            if (confirm("האם אתה בטוח שברצונך למחוק?") == true) {
+
+                $.ajax({
+                    url: '/Catalog/Delete',
+                    type: 'Post',
+                    dataType: 'Json',
+                    data: { id: id },
+                    success: (function (result) {
+                        $(product).hide(500);
+                        $("#countOfProducts").text("(" + result + ")");
+                    }),
+                    error: (function (xhr, status) {
+                        alert(status);
+                    })
+                });
+            }
+        });
+
+        $("#pricesRange").change(function () {
+            $("#max").text($(this).val());
+        });
+
+        $(".searchImg").click(function () {
+            if ($(".searchBar").hasClass("closed")) {
+                $(".searchBar").show();
+                $(".searchBar").removeClass("closed");
+                $(".searchBar").addClass("open");
+            }
+            else {
+                $(".searchBar").hide();
+                $(".searchBar").removeClass("open");
+                $(".searchBar").addClass("closed");
+            }
+
+        });
+
+    </script>
+}
+
+<h2>קטלוג</h2>
+@{var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];}
+@if (sessionUser != null && sessionUser.IsAdmin)
+{
+    <p>
+        @Html.ActionLink("הוסף פריט חדש", "Create")
+    </p>
+}
+@using (Html.BeginForm("Index", "Catalog", FormMethod.Post))
+{
+    <div class="searchImg">
+        <label>לחיפוש . . .</label>
+    </div>
+    <div class="searchBar closed" style="display:none">
+        <div style="display: flex">
+            <div style="margin-left: 30px;">
+                <label>שם פריט:</label>
+                <input name="txt" value="" style="width: 150px;" />
+            </div>
+            <div style=" ">
+                <label>סניף:</label>
+                @Html.DropDownList("BranchID", null, " ", new { style = "width:200px; margin-left:30px;" })
+            </div>
+            <div style="  padding-left:20px;">
+                <label>קטגוריה:</label>
+                @Html.DropDownList("category", new SelectList(Enum.GetValues(typeof(MVC.Models.e_Category))), " ", new { style = "width:200px" })
+            </div>
+            <div style="  height: 76px;">
+                <label>טווח מחירים:</label>
+                <span id="min">0</span>
+                <input id="pricesRange" name="pricesRange" type="range" min="0" max="@ViewBag.MaxPrice" value="@ViewBag.MaxPrice" style="width: 200px" />
+                <span id="max" style="margin-left: 20px;">@ViewBag.MaxPrice</span>
+            </div>
+        </div>
+        <div style="display: flex; margin-top: 20px;">
+            <div style="  height: 76px;">
+                <label>מידה: </label>
+                <div style="display:flex; margin-top:9px;">
+                    <input type="radio" name="size" value="XS" style="margin-right:20px;"><span>XS</span>
+                    <input type="radio" name="size" value="S" style="margin-right:20px;"><span>S</span>
+                    <input type="radio" name="size" value="M" style="margin-right:20px;"><span>M</span>
+                    <input type="radio" name="size" value="L" style="margin-right:20px;"><span>L</span>
+                </div>
+            </div>
+            <input type="submit" value="סנן" style="margin:30px;" />
+        </div>
+    </div>
+}
+
+@{var exist = (List<int>)System.Web.HttpContext.Current.Session["shoppingList"];}
+
+<div id="catalog-main">
+    @foreach (var item in Model)
+    {
+        <section class="product-cell">
+            @if (item.IsOnSale)
+            {
+                <img src="~/Content/images/onSale1.png" style="float: left" />
+            }
+            @if (sessionUser != null && sessionUser.IsAdmin)
+            {
+                <img src="~/Content/images/del.png" id="delete_@item.ProductID" class="deleteProduct" title="מחיקת פריט" />
+            }
+
+            @Html.ActionLink(" ", "Details", "Catalog", new { id = @item.ProductID }, new
+               {
+                   style = "background: url('" + item.Image + "') no-repeat center right; display:block; height:360px; width:264px;"
+               })
+
+            <div id=@item.ProductID class="product-details" style="text-align:center; font-weight:bold">
+                <label>@item.Name</label>
+                <label>@item.Size</label>
+                <label>@item.Price.ToString() ₪</label>
+
+                @if (exist.Contains(item.ProductID))
+                {
+                    <button type="button" disabled="disabled" class="inBag">נוסף לסל</button>
+                }
+                else
+                {
+                    <button type="button" class="addToBag">הוסף לסל</button>
+                }
+
+            </div>
+        </section>
+    }
+</div>

@@ -1,0 +1,131 @@
+﻿@model MVC.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+}
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var map = null;
+            getMap();
+            UpdatePushpin();
+        });
+
+        function getMap() {
+
+            var MapSize = {
+                normalSize: {
+                    height: 200,
+                    width: 500
+                },
+                fullScreen: {
+                    height: screen.height,
+                    width: screen.width
+                }
+            }
+
+            var mapOptions = {
+                credentials: "AtLpSxVL1pD68Ueg3TUHYd4lzBkxqsTKJv9r_H0SNFHSDp-cq25L3DOrPsNL4pHJ",
+                mapTypeId: Microsoft.Maps.MapTypeId.road,
+                center: new Microsoft.Maps.Location($("#coorX").val(),  $("#coorY").val()),
+                zoom: 17,
+                labelOverlay: Microsoft.Maps.LabelOverlay.hidden,
+                height: MapSize.normalSize.height,
+                width: MapSize.normalSize.width
+            }
+            map = new Microsoft.Maps.Map(document.getElementById("branch-map"), mapOptions);
+        }
+
+        function UpdatePushpin() {
+                var x = $("#coorX").val();
+                var y = $("#coorY").val();
+
+                var point1 = new Microsoft.Maps.Location(x, y);
+                var pin1 = new Microsoft.Maps.Pushpin(point1, { width: 50, height: 50, draggable: false });
+                map.entities.push(pin1);
+        }
+
+        $("#pickup").click(function () {
+            if ($("#branch-map").hasClass("closed")) {
+                $("#branch-map").show();
+                $("#branch-map").removeClass("closed");
+                $("#branch-map").addClass("open");
+            }
+            else {
+                $("#branch-map").hide();
+                $("#branch-map").removeClass("open");
+                $("#branch-map").addClass("closed");
+            }
+        });
+
+        </script>
+}
+
+@{var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];}
+
+<h2>פרטי מוצר</h2>
+
+<fieldset style="margin-left:150px">
+    <legend>Product</legend>
+
+    <div style="float:right">
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Name):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Name)
+        </div>
+
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Description):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Description)
+        </div>
+
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Category):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Category)
+        </div>
+
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Price):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Price)
+        </div>
+
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Size):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Size)
+        </div>
+
+        <div class="display-label-details" >
+            @Html.DisplayNameFor(model => model.Branch.Name):
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Branch.Name)
+        </div>
+        <div id="pickup" >
+            איסוף עצמי?
+            @Html.Hidden("coorX", Model.Branch.CoorX.ToString())
+            @Html.Hidden("coorY", Model.Branch.CoorY.ToString())
+        </div>
+        <div id="branch-map" class="closed" style="display:none"></div>
+    </div>
+
+    <img src="@Model.Image" style="width:400px;height:520px; float:left" />
+</fieldset>
+
+<p>
+    @if (sessionUser != null && sessionUser.IsAdmin)
+    {
+        @Html.ActionLink("עריכה", "Edit", new { id = Model.ProductID }) <text>|</text>
+    }
+    @Html.ActionLink("חזרה לקטלוג", "Index")
+</p>

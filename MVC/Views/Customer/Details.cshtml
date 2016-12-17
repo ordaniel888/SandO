@@ -1,0 +1,110 @@
+﻿@model MVC.Models.Customer
+
+@{
+    ViewBag.Title = "S&O - פרטי חשבון";
+}
+@section scripts {
+    <script type="text/javascript">
+
+        $(".searchImg").click(function () {
+            if ($(".searchBar").hasClass("closed")) {
+                $(".searchBar").show();
+                $(".searchBar").removeClass("closed");
+                $(".searchBar").addClass("open");
+            }
+            else {
+                $(".searchBar").hide();
+                $(".searchBar").removeClass("open");
+                $(".searchBar").addClass("closed");
+            }
+
+        });
+    </script>
+}
+
+
+<h2>פרטי החשבון</h2>
+
+<fieldset>
+    <legend>Customer</legend>
+
+    <div>
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.FirstName): @Html.DisplayFor(model => model.FirstName)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.LastName): @Html.DisplayFor(model => model.LastName)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.Password): @Html.DisplayFor(model => model.Password)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.Age): @Html.DisplayFor(model => model.Age)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.City): @Html.DisplayFor(model => model.City)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.Street): @Html.DisplayFor(model => model.Street)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.HouseNo): @Html.DisplayFor(model => model.HouseNo)
+        </div>
+
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.PhoneNo): @Html.DisplayFor(model => model.PhoneNo)
+        </div>
+        <div class="customerDetails">
+            @Html.DisplayNameFor(model => model.Email): @Html.DisplayFor(model => model.Email)
+        </div>
+    </div>
+
+    <div>
+        @if (Model.Orders.Count != 0)
+        {
+            using (Html.BeginForm("Details", "Customer", FormMethod.Post))
+            {
+                <div class="searchImg">
+                    <label>לחיפוש . . .</label>
+                </div>
+                <div class="searchBar closed" style="display:none">
+                    <div style="display:inline">
+                        <label>סנן הזמנות לפי תאריך: </label>
+                        @Html.DropDownList("Dates", null, "בחר תאריך", new { style = "width:200px; margin-left:30px;" })
+                    </div>
+                    <input type="submit" value="סנן" />
+                </div>
+            }
+            <div style="display:table">
+                @foreach (var item in Model.Orders)
+                {
+                    <div id=@item.OrderID style="display:table-cell; padding:15px 15px 15px 35px;">
+                        <label>@item.Product.Name</label>
+                        <label>@item.Product.Price.ToString() ₪</label>
+                        <label>תאריך רכישה:</label><label>@item.PurchaseDate.ToShortDateString()</label>
+                        <a class="orderDetails" href="/Catalog/Details/@item.ProductID">
+                            <img src="@item.Product.Image" style="width:80px;height:110px;" />
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</fieldset>
+<p>
+    @Html.ActionLink("עריכה", "Edit", new { id = Model.CustomerID })
+
+    @{var sessionUser = (MVC.Models.Customer)HttpContext.Current.Session["userLogged"];}
+    @if (sessionUser != null && sessionUser.IsAdmin)
+    {
+        <text>|</text>
+        @Html.ActionLink("חזרה לרשימת לקוחות", "Index")
+    }
+</p>

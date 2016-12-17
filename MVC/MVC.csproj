@@ -210,6 +210,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CatalogController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\BranchController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\ShopingContext.cs" />
@@ -223,6 +225,14 @@
     <Compile Include="Migrations\201611241659137_2.cs" />
     <Compile Include="Migrations\201611241659137_2.Designer.cs">
       <DependentUpon>201611241659137_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612171506096_sjsjsj.cs" />
+    <Compile Include="Migrations\201612171506096_sjsjsj.Designer.cs">
+      <DependentUpon>201612171506096_sjsjsj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612171637185_addIsAdmin.cs" />
+    <Compile Include="Migrations\201612171637185_addIsAdmin.Designer.cs">
+      <DependentUpon>201612171637185_addIsAdmin.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Branch.cs" />
@@ -246,6 +256,15 @@
     <Content Include="Views\Branch\Index.cshtml" />
     <Content Include="Views\Branch\Create.cshtml" />
     <Content Include="Views\Branch\Edit.cshtml" />
+    <Content Include="Views\Customer\Create.cshtml" />
+    <Content Include="Views\Customer\Details.cshtml" />
+    <Content Include="Views\Customer\Edit.cshtml" />
+    <Content Include="Views\Customer\Index.cshtml" />
+    <Content Include="Views\Customer\Login.cshtml" />
+    <Content Include="Views\Catalog\Create.cshtml" />
+    <Content Include="Views\Catalog\Details.cshtml" />
+    <Content Include="Views\Catalog\Edit.cshtml" />
+    <Content Include="Views\Catalog\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -263,6 +282,12 @@
     <EmbeddedResource Include="Migrations\201611241659137_2.resx">
       <DependentUpon>201611241659137_2.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612171506096_sjsjsj.resx">
+      <DependentUpon>201612171506096_sjsjsj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612171637185_addIsAdmin.resx">
+      <DependentUpon>201612171637185_addIsAdmin.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

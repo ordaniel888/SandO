@@ -1,0 +1,103 @@
+﻿@model MVC.Models.Product
+
+@{
+    ViewBag.Title = "Create";
+}
+
+@section scripts {
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#image").change(function () {
+
+            $("#pic").val("stam");
+        });
+    });
+    
+    
+
+</script>
+    }
+<h2>הוספת מוצר חדש</h2>
+
+@using (Html.BeginForm("Create", "Catalog", FormMethod.Post, new { enctype = "multipart/form-data" })){
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset class="multiset">
+        <legend>Product</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Category)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(Model => Model.Category,
+                                   new SelectList(Enum.GetValues(typeof(MVC.Models.e_Category))))
+            @Html.ValidationMessageFor(model => model.Category)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Size)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(Model => Model.Size,
+                                   new SelectList(Enum.GetValues(typeof(MVC.Models.e_Size))))
+            @Html.ValidationMessageFor(model => model.Size)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Price)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Price)
+            @Html.ValidationMessageFor(model => model.Price)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Image)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Image, new { id = "pic", style = "display:none;" })
+            <input type="file" id="image" name="file" />
+            @Html.ValidationMessageFor(model => model.Image)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.BranchID)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("BranchID", String.Empty)
+            @Html.ValidationMessageFor(model => model.BranchID)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsOnSale)
+            @Html.EditorFor(model => model.IsOnSale)
+            @Html.ValidationMessageFor(model => model.IsOnSale)
+        </div>
+
+        <p>
+            <input type="submit" value="הוסף" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("חזרה לקטלוג", "Index")
+</div>
