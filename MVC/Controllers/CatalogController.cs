@@ -96,12 +96,13 @@ namespace SandO.Controllers
                 var path = Path.Combine(Server.MapPath("~/Content/images"), FileName);
                 file.SaveAs(path);
 
-                physicalPath = "/Content/images/" + FileName; 
+                physicalPath = "/content/images/" + FileName; 
 
             }
 
             product.Image = physicalPath;
-            if (ModelState.IsValid)
+            var errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new { x.Key, x.Value.Errors }).ToArray();
+            if (ModelState.IsValid || (errors[0].Key == "Image" && errors[0].Errors.Count == 1 && product.Image != "") )
             {
                 db.Products.Add(product);
                 db.SaveChanges();
@@ -151,7 +152,8 @@ namespace SandO.Controllers
                 product.Image = physicalPath;
             }
 
-            if (ModelState.IsValid)
+            var errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new { x.Key, x.Value.Errors }).ToArray();
+            if (ModelState.IsValid || (errors[0].Key == "Image" && errors[0].Errors.Count == 1 && product.Image != null))
             {
                 db.Entry(product).State = EntityState.Modified;
                 db.SaveChanges();

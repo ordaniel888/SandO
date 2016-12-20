@@ -1,0 +1,183 @@
+﻿@model IEnumerable<MVC.Models.Product>
+@{
+    ViewBag.Title = "S&O - סל קניות";
+}
+@section scripts {
+    <script type="text/javascript">
+
+        $(".delete").click(function () {
+
+            var button = $(this);
+            var str = $(this).parent().parent().attr("id").split("#");
+
+            $.ajax({
+                url: '/ShoppingBag/Delete',
+                type: 'Post',
+                dataType: 'Json',
+                data: { id: str[0] },
+                success: (function (result) {
+
+                    $(button).parent().parent().hide(500);
+                    $("#countOfProducts").text("(" + result + ")");
+
+                    if (result == 0) {
+                        $("#shoppingBag").css("display", "none");
+                        $(".main-content").append($("<div>").text('לא קיימים פריטים בסל הקניות'));
+                    }
+
+                    var sum = $("#sum").text();
+                    $("#sum").text(sum - str[1])
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                })
+            });
+        });
+
+        $("#buy").click(function () {
+
+            $.ajax({
+                url: '/ShoppingBag/Buy',
+                type: 'Post',
+                dataType: 'Json',
+                success: (function (result) {
+
+                    if (result) {
+                        $("#shoppingBag").css("display", "none");
+                        $("#message").css("display", " block");
+                        $("#countOfProducts").text("(0)");
+
+                    }
+                    else {
+                        alert("רק משתמש קיים יכול לבצע הזמנה, אנא התחבר ונסה שנית");
+                    }
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                })
+            });
+        });
+
+        $("#currencyNames").change(function () {
+
+            var prevCurrency = $("#currency").val();
+            var selCurrency = $("#currencyNames").val();
+            if (selCurrency.length == 0) {
+                selCurrency = "ILS";
+            }
+
+            $.ajax({
+                url: '/WSConverter/CurrencyRate',
+                type: 'Post',
+                dataType: 'Json',
+                data: { fromCurrency: prevCurrency, toCurrency: selCurrency },
+                success: (function (result) {
+                    $("#currency").val(selCurrency);
+
+                    $(".priceConv").each(function () {
+                        var x = $(this).text();
+                        var d = Math.round((x * result) * 100) / 100;
+                        $(this).text(Math.round(d));
+                    });
+
+                    var oldSum = $("#sum").text();
+                    var s = Math.round((oldSum * result) * 100) / 100;
+                    $("#sum").text(Math.round(s));
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                })
+            });
+        });
+
+    </script>
+}
+
+<h2>סל קניות</h2>
+
+<!--<div id="currencyBar">
+    
+    <span>הצג מחירים ב:</span>
+    Html.DropDownList("currencyNames", new SelectList(Enum.GetValues(typeof(MVC.MyWebService.Currency))),
+                                       MVC.MyWebService.Currency.ILS.ToString())
+    Html.Hidden("currency", "ILS")
+        
+</div>-->
+
+@if (Model.Count() != 0)
+{
+    <div id="shoppingBag">
+        <table>
+            <tr>
+                <th>
+                    @Html.Label("")
+                </th>
+                <th>
+                    @Html.Label("פריט")
+                </th>
+                <th>
+                    @Html.Label("תכונות")
+                </th>
+                <th>
+                    @Html.Label("מידה")
+                </th>
+                <th>
+                    @Html.Label("מחיר")
+                </th>
+                <th>
+
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr id="@item.ProductID#@item.Price">
+                    <td>
+                        <img src="@item.Image" style="width:100px;height:130px;" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Size)
+                    </td>
+                    <td class="priceConv">
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        <button type="button" class="delete">מחק</button>
+                    </td>
+                </tr>
+            }
+            <tr style="border-top:solid 1px black;">
+                <td colspan="4" style="text-align:left">
+                    סה"כ
+                </td>
+                <td id="sum"> @ViewBag.Total</td>
+                <td>
+                    <button id="buy" type="button" class="buy">לקופה</button>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+}
+else
+{
+    <div>
+        לא קיימים פריטים בסל הקניות
+    </div>
+}
+
+<div id="message" style="display:none">
+    ההזמנה בוצעה בהצלחה. לצפיה בפרטי ההזמנה לחץ:
+    @if (System.Web.HttpContext.Current.Session["userLogged"] != null)
+    {
+        @Html.ActionLink("החשבון שלי", "Details", "Customer", new { id = ((MVC.Models.Customer)System.Web.HttpContext.Current.Session["userLogged"]).CustomerID },
+                      htmlAttributes: null)
+
+    }
+</div>
